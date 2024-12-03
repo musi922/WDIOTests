@@ -1,0 +1,22 @@
+{
+  "name": "wdio-project",
+  "version": "1.0.0",
+  "description": "WebdriverIO Test Project",    
+  "main": "index.js",
+  "scripts": {
+    "test": "wdio run wdio.conf.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@wdio/cli": "^8.40.6",
+    "@wdio/local-runner": "^9.4.1",
+    "@wdio/mocha-framework": "^9.2.8",
+    "@wdio/spec-reporter": "^9.2.14",
+    "chromedriver": "^119.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "wdio-chromedriver-service": "^8.1.1"
+  }
+}
