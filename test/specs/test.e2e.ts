@@ -28,7 +28,6 @@ describe('UI5 Product Navigation', () => {
         await browser.pause(2000);  
     });
     it('should find and click back button', async () => {
-        // Multiple selector strategies
         const backButtonSelectors = [
             '.sapMPageNavButtonText[data-sap-ui="backBtn"]', 
             '.sapMPageNavButton', 
