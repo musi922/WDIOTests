@@ -47,7 +47,7 @@ describe('Product Management', () => {
         await createDialog.waitForDisplayed({ timeout: 5000 });
 
         const testProduct: TestProduct = {
-            id: '69',
+            id: '1',
             name: 'Automated Test Product',
             description: 'Created by automated test',
             price: `199`,
@@ -67,9 +67,11 @@ describe('Product Management', () => {
 
 
 
-        const editButton = await $(`//*[contains(text(),'${testProduct.id}')]/ancestor::tr//button[contains(text(),'Edit')]`);
+        const productRow = await $(`//*[contains(@class, "idTable")]//*[contains(@class, "id") and text()="${testProduct.id}"]/ancestor::tr`);
+        await productRow.waitForDisplayed({ timeout: 10000 });
+        
+        const editButton = await productRow.$('button=Edit');
         await editButton.click();
-        await browser.pause(1000);
 
         const updatedName = `Updated ${testProduct.name}`;
         await $('#productNameInput').setValue(updatedName);
