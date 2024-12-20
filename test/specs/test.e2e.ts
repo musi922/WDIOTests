@@ -108,6 +108,8 @@ describe("Product Management", () => {
     const ok = await $("button=OK");
     await ok.waitForDisplayed({ timeout: 20000 });
     await ok.click();
+    await browser.pause(3000);
+
   });
 });
 
