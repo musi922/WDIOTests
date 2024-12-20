@@ -1,119 +1,151 @@
-import { browser, $ } from '@wdio/globals';
-import { expect } from '@wdio/globals';
+import { browser, $ } from "@wdio/globals";
+import { expect } from "@wdio/globals";
 
 interface TestProduct {
-    id: string;
-    name: string;
-    description: string;
-    price: string;
+  id: string;
+  name: string;
+  description: string;
+  price: string;
 }
 
-describe('Login Form Tests', () => {
-    it('should login successfully with valid credentials', async () => {
-        await browser.url('http://localhost:8080/index.html');
+describe("Login Form Tests", () => {
+  it("should login successfully with valid credentials", async () => {
+    await browser.url("http://localhost:8080/index.html");
 
-        const usernameField = await $('input[name="email"]');
-        console.log('Entering username...');
-        await usernameField.waitForExist({ timeout: 10000 });
-        await usernameField.waitForDisplayed({ timeout: 10000 });
-        await usernameField.setValue('admin');
-        console.log('Username entered.');
+    const usernameField = await $('input[name="email"]');
+    console.log("Entering username...");
+    await usernameField.waitForExist({ timeout: 10000 });
+    await usernameField.waitForDisplayed({ timeout: 10000 });
+    await usernameField.setValue("admin");
+    console.log("Username entered.");
 
-        const passwordField = await $('input[name="password"]');
-        await passwordField.waitForExist({ timeout: 10000 });
-        await passwordField.waitForDisplayed({ timeout: 10000 });
-        await passwordField.setValue('admin123');
+    const passwordField = await $('input[name="password"]');
+    await passwordField.waitForExist({ timeout: 10000 });
+    await passwordField.waitForDisplayed({ timeout: 10000 });
+    await passwordField.setValue("admin123");
 
-        const signInButton = await $('button=Sign in');
-        await signInButton.waitForDisplayed({ timeout: 10000 });
-        await signInButton.click();
+    const signInButton = await $("button=Sign in");
+    await signInButton.waitForDisplayed({ timeout: 10000 });
+    await signInButton.click();
 
-        const mainContent = await $('.mainTabBar');
-        await mainContent.waitForDisplayed({ timeout: 10000 });
+    const mainContent = await $(".mainTabBar");
+    await mainContent.waitForDisplayed({ timeout: 10000 });
 
-        await expect(mainContent).toBeExisting();
-        await browser.pause(3000)
-    });
+    await expect(mainContent).toBeExisting();
+    await browser.pause(3000);
+  });
 });
-describe('Product Management', () => {
-    it('should create, edit, and delete a product', async () => {
+describe("Product Management", () => {
+  it("should create, edit, and delete a product", async () => {
+    const productsTable = await $(".idTable");
+    await productsTable.waitForDisplayed({ timeout: 30000 });
 
-        const productsTable = await $('.idTable');
-        await productsTable.waitForDisplayed({ timeout: 30000 });
+    const createButton = await $("button=Create Product");
+    await createButton.click();
 
-        const createButton = await $('button=Create Product');
-        await createButton.click();
+    const createDialog = await $(".createProduct");
+    await createDialog.waitForDisplayed({ timeout: 5000 });
+    await browser.pause(3000);
 
-        const createDialog = await $('.createProduct');
-        await createDialog.waitForDisplayed({ timeout: 5000 });
-        await browser.pause(3000)
+    const testProduct: TestProduct = {
+      id: "1",
+      name: "Automated Test Product",
+      description: "Created by automated test",
+      price: `199`,
+    };
 
-        const testProduct: TestProduct = {
-            id: '1',
-            name: 'Automated Test Product',
-            description: 'Created by automated test',
-            price: `199`,
-        };
+    await $('input[name="ID"]').setValue(testProduct.id);
+    await $('input[name="Name"]').setValue(testProduct.name);
+    await $('input[name="Description"]').setValue(testProduct.description);
+    await $('input[name="Price"]').setValue(testProduct.price);
 
-        await $('input[name="ID"]').setValue(testProduct.id);
-        await $('input[name="Name"]').setValue(testProduct.name);
-        await $('input[name="Description"]').setValue(testProduct.description);
-        await $('input[name="Price"]').setValue(testProduct.price);
+    await $("button=Create").click();
 
-        await $('button=Create').click();
- 
-        
-        const okButton = await $('button=OK');
-        await okButton.waitForDisplayed({timeout: 20000})
-        await okButton.click();
+    const okButton = await $("button=OK");
+    await okButton.waitForDisplayed({ timeout: 20000 });
+    await okButton.click();
 
-        await browser.pause(5000)
+    await browser.pause(5000);
 
+    const productRow = await $(
+      `//*[contains(@class, "idTable")]//*[contains(@class, "id") and text()="${testProduct.id}"]/ancestor::tr`
+    );
+    await productRow.waitForDisplayed({ timeout: 10000 });
 
+    const editButton = await productRow.$("button=Edit");
+    await editButton.click();
+    await browser.pause(3000);
 
-        const productRow = await $(`//*[contains(@class, "idTable")]//*[contains(@class, "id") and text()="${testProduct.id}"]/ancestor::tr`);
-        await productRow.waitForDisplayed({ timeout: 10000 });
-        
-        const editButton = await productRow.$('button=Edit');
-        await editButton.click();        
-        await browser.pause(3000)
+    const updatedName = `Updated ${testProduct.name}`;
+    await $('input[name="Name"]').setValue(updatedName);
+    const updatedDescription = `Updated ${testProduct.description}`;
+    await $('input[name="Description"]').setValue(updatedDescription);
+    const updatedPrice = `2${testProduct.price}`;
+    await $('input[name="Price"]').setValue(updatedPrice);
+    await browser.pause(5000);
+    await $("button=Create").click();
 
-        const updatedName = `Updated ${testProduct.name}`;
-        await $('input[name="Name"]').setValue(updatedName);
-        const updatedDescription = `Updated ${testProduct.description}`;
-        await $('input[name="Description"]').setValue(updatedDescription);
-        const updatedPrice = `2${testProduct.price}`;
-        await $('input[name="Price"]').setValue(updatedPrice);
-        await browser.pause(5000)
-        await $('button=Create').click();
+    const okBu = await $("button=OK");
+    await okBu.waitForDisplayed({ timeout: 20000 });
+    await okBu.click();
+    await browser.pause(5000);
 
+    const productsRow = await $(
+      `//*[contains(@class, "idTable")]//*[contains(@class, "id") and text()="${testProduct.id}"]/ancestor::tr`
+    );
+    await productsRow.waitForDisplayed({ timeout: 5000 });
 
-        const okBu = await $('button=OK');
-        await okBu.waitForDisplayed({timeout: 20000})
-        await okBu.click();
-        await browser.pause(5000)
+    await browser.pause(5000);
 
-        const productsRow = await $(`//*[contains(@class, "idTable")]//*[contains(@class, "id") and text()="${testProduct.id}"]/ancestor::tr`);
-        await productsRow.waitForDisplayed({timeout: 5000})
+    const deleteButton = await productsRow.$("button=Delete");
+    await deleteButton.click();
+    await browser.pause(5000);
 
-        await browser.pause(5000)
+    const confirmationButton = await $("button=Yes");
+    await confirmationButton.click();
+    await browser.pause(1000);
 
-        const deleteButton = await productsRow.$('button=Delete')
-        await deleteButton.click()
-        await browser.pause(5000)
-
-        const confirmationButton = await $('button=Yes')
-        await confirmationButton.click()
-        await browser.pause(1000)
-
-        const ok = await $('button=OK');
-        await ok.waitForDisplayed({timeout: 20000})
-        await ok.click();
-        await browser.pause(5000)
-
-
-
-
-    });
+    const ok = await $("button=OK");
+    await ok.waitForDisplayed({ timeout: 20000 });
+    await ok.click();
+  });
 });
 
+describe("Navigation Tests", () => {
+    it("should navigate to Customers tab and verify content", async () => {
+      const customersTab = await $("//div[contains(@class, 'sapMITBItem') and .='Customers']");
+      await customersTab.waitForDisplayed({ timeout: 10000 });
+      await customersTab.click();
+  
+      const customersContent = await $(".CustomersPage");
+      await customersContent.waitForDisplayed({ timeout: 10000 });
+  
+      await expect(customersContent).toBeExisting();
+      await browser.pause(5000);
+    });
+  
+    it("should navigate to Suppliers tab and verify content", async () => {
+      const suppliersTab = await $("//div[contains(@class, 'sapMITBItem') and .='Suppliers']");
+      await suppliersTab.waitForDisplayed({ timeout: 10000 });
+      await suppliersTab.click();
+  
+      const suppliersContent = await $(".SuppliersPage");
+      await suppliersContent.waitForDisplayed({ timeout: 10000 });
+  
+      await expect(suppliersContent).toBeExisting();
+      await browser.pause(5000);
+    });
+  
+    it("should navigate back to Products tab and verify content", async () => {
+      const productsTab = await $("//div[contains(@class, 'sapMITBItem') and .='Products']");
+      await productsTab.waitForDisplayed({ timeout: 10000 });
+      await productsTab.click();
+  
+      const productsContent = await $(".idTable");
+      await productsContent.waitForDisplayed({ timeout: 10000 });
+  
+      await expect(productsContent).toBeExisting();
+      await browser.pause(5000);
+    });
+  });
+  
